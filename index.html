@@ -1,0 +1,106 @@
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("salaryForm");
+
+  if (!form) {
+    alert("Error: salaryForm नहीं मिला। HTML में form ID चेक करो।");
+    return;
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const role = document.getElementById("role").value;
+    const exp = Number(document.getElementById("experience").value);
+    const city = Number(document.getElementById("city").value);
+    const company = Number(document.getElementById("company").value);
+    const education = Number(document.getElementById("education").value);
+    const skill = Number(document.getElementById("skill").value);
+
+    const baseSalary = {
+      frontend: 6.5,
+      backend: 7.5,
+      fullstack: 7.2,
+      mobile: 7,
+      data: 9,
+      devops: 8.5,
+      qa: 5.5,
+      cyber: 8
+    };
+
+    let expMultiplier;
+
+    if (exp === 0) expMultiplier = 0.62;
+    else if (exp === 1) expMultiplier = 0.78;
+    else if (exp === 2) expMultiplier = 0.92;
+    else if (exp === 4) expMultiplier = 1.28;
+    else if (exp === 7) expMultiplier = 1.8;
+    else expMultiplier = 2.35;
+
+    const salary = Math.max(
+      2.4,
+      baseSalary[role] * expMultiplier * city *
+      company * education * skill
+    );
+
+    const low = salary * 0.82;
+    const high = salary * 1.22;
+
+    const annual = document.getElementById("annual");
+    const range = document.getElementById("range");
+    const monthly = document.getElementById("monthly");
+    const level = document.getElementById("level");
+    const percent = document.getElementById("percent");
+    const barFill = document.getElementById("barFill");
+    const placeholder = document.getElementById("placeholder");
+    const result = document.getElementById("result");
+
+    if (!annual || !range || !monthly || !result || !placeholder) {
+      alert("Result वाले HTML IDs चेक करो।");
+      return;
+    }
+
+    function rupeesInLakh(value) {
+      return "₹" + value.toFixed(2) + " लाख";
+    }
+
+    function money(value) {
+      return "₹" + Math.round(value).toLocaleString("en-IN");
+    }
+
+    annual.innerHTML =
+      "₹" + salary.toFixed(1) + " <small>LPA</small>";
+
+    range.textContent =
+      "रेंज: " + rupeesInLakh(low) +
+      " से " + rupeesInLakh(high) + " प्रति वर्ष";
+
+    monthly.textContent = money(salary * 100000 / 12);
+
+    level.textContent =
+      exp === 0 ? "Fresher" :
+      exp <= 2 ? "Junior" :
+      exp <= 5 ? "Mid-level" :
+      exp <= 8 ? "Senior" : "Lead+";
+
+    const score = Math.min(
+      100,
+      Math.max(15, Math.round(salary / 35 * 100))
+    );
+
+    if (percent) percent.textContent = score + "%";
+    if (barFill) barFill.style.width = score + "%";
+
+    placeholder.style.display = "none";
+    result.style.display = "block";
+
+    result.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+  });
+});
+</script>
+</body>
+</html>
