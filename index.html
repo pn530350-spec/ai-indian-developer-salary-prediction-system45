@@ -1,105 +1,75 @@
-
+ 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("salaryForm");
+const form = document.getElementById("salaryForm");
 
-  if (!form) {
-    alert("Error: salaryForm नहीं मिला। HTML में form ID चेक करो।");
-    return;
-  }
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
+  const role = document.getElementById("role").value;
+  const exp = Number(document.getElementById("experience").value);
+  const city = Number(document.getElementById("city").value);
+  const company = Number(document.getElementById("company").value);
+  const education = Number(document.getElementById("education").value);
+  const skill = Number(document.getElementById("skill").value);
 
-    const role = document.getElementById("role").value;
-    const exp = Number(document.getElementById("experience").value);
-    const city = Number(document.getElementById("city").value);
-    const company = Number(document.getElementById("company").value);
-    const education = Number(document.getElementById("education").value);
-    const skill = Number(document.getElementById("skill").value);
+  const salaryList = {
+    frontend: 6.5,
+    backend: 7.5,
+    fullstack: 7.2,
+    mobile: 7,
+    data: 9,
+    devops: 8.5,
+    qa: 5.5,
+    cyber: 8
+  };
 
-    const baseSalary = {
-      frontend: 6.5,
-      backend: 7.5,
-      fullstack: 7.2,
-      mobile: 7,
-      data: 9,
-      devops: 8.5,
-      qa: 5.5,
-      cyber: 8
-    };
+  let experienceFactor = 0.62;
 
-    let expMultiplier;
+  if (exp === 1) experienceFactor = 0.78;
+  if (exp === 2) experienceFactor = 0.92;
+  if (exp === 4) experienceFactor = 1.28;
+  if (exp === 7) experienceFactor = 1.8;
+  if (exp >= 10) experienceFactor = 2.35;
 
-    if (exp === 0) expMultiplier = 0.62;
-    else if (exp === 1) expMultiplier = 0.78;
-    else if (exp === 2) expMultiplier = 0.92;
-    else if (exp === 4) expMultiplier = 1.28;
-    else if (exp === 7) expMultiplier = 1.8;
-    else expMultiplier = 2.35;
+  const salary = Math.max(
+    2.4,
+    salaryList[role] * experienceFactor *
+    city * company * education * skill
+  );
 
-    const salary = Math.max(
-      2.4,
-      baseSalary[role] * expMultiplier * city *
-      company * education * skill
-    );
+  const low = salary * 0.82;
+  const high = salary * 1.22;
 
-    const low = salary * 0.82;
-    const high = salary * 1.22;
+  document.getElementById("annual").innerHTML =
+    "₹" + salary.toFixed(1) + " <small>LPA</small>";
 
-    const annual = document.getElementById("annual");
-    const range = document.getElementById("range");
-    const monthly = document.getElementById("monthly");
-    const level = document.getElementById("level");
-    const percent = document.getElementById("percent");
-    const barFill = document.getElementById("barFill");
-    const placeholder = document.getElementById("placeholder");
-    const result = document.getElementById("result");
+  document.getElementById("range").textContent =
+    "सालाना अनुमान: ₹" + (low * 100000).toLocaleString("en-IN") +
+    " से ₹" + (high * 100000).toLocaleString("en-IN");
 
-    if (!annual || !range || !monthly || !result || !placeholder) {
-      alert("Result वाले HTML IDs चेक करो।");
-      return;
-    }
+  document.getElementById("monthly").textContent =
+    "₹" + Math.round(salary * 100000 / 12)
+      .toLocaleString("en-IN");
 
-    function rupeesInLakh(value) {
-      return "₹" + value.toFixed(2) + " लाख";
-    }
+  document.getElementById("level").textContent =
+    exp === 0 ? "नया डेवलपर" :
+    exp <= 2 ? "जूनियर" :
+    exp <= 5 ? "मिड-लेवल" :
+    exp <= 8 ? "सीनियर" : "लीड डेवलपर";
 
-    function money(value) {
-      return "₹" + Math.round(value).toLocaleString("en-IN");
-    }
+  const score = Math.min(100, Math.round(salary / 35 * 100));
 
-    annual.innerHTML =
-      "₹" + salary.toFixed(1) + " <small>LPA</small>";
+  document.getElementById("percent").textContent = score + "%";
+  document.getElementById("barFill").style.width = score + "%";
 
-    range.textContent =
-      "रेंज: " + rupeesInLakh(low) +
-      " से " + rupeesInLakh(high) + " प्रति वर्ष";
+  document.getElementById("placeholder").style.display = "none";
+  document.getElementById("result").style.display = "block";
 
-    monthly.textContent = money(salary * 100000 / 12);
-
-    level.textContent =
-      exp === 0 ? "Fresher" :
-      exp <= 2 ? "Junior" :
-      exp <= 5 ? "Mid-level" :
-      exp <= 8 ? "Senior" : "Lead+";
-
-    const score = Math.min(
-      100,
-      Math.max(15, Math.round(salary / 35 * 100))
-    );
-
-    if (percent) percent.textContent = score + "%";
-    if (barFill) barFill.style.width = score + "%";
-
-    placeholder.style.display = "none";
-    result.style.display = "block";
-
-    result.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest"
-    });
-  });
+  document.getElementById("tipsList").innerHTML = `
+    <li>JavaScript, Python या अपनी चुनी हुई भाषा में अभ्यास करें।</li>
+    <li>अपने प्रोजेक्ट बनाकर GitHub पर अपलोड करें।</li>
+    <li>इंटरव्यू और समस्या हल करने का अभ्यास करें।</li>
+  `;
 });
 </script>
 </body>
